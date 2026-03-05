@@ -1,163 +1,212 @@
-#MarSci MMM – Findings and Recommendations
+# MarSci MMM – Findings and Recommendations
 
-1. Context and goal
+## 1. Context and Goal
 
-The goal of this exercise was to understand how paid media investment is actually contributing to ecommerce net sales using a proper Media Mix Model, rather than relying on last-click attribution or simple channel ratios.
+The goal of this exercise was to understand how paid media investment contributes to ecommerce net sales using a **Media Mix Model (MMM)**, instead of relying on last-click attribution or simple channel-level ratios.
 
-To do this, I first consolidated Ad Platform data, Sales data, and GA4 Sessions into a single weekly dataset. From there I used Google’s open-source MMM framework Meridian to estimate a national weekly model using net_sales as the main KPI.
+To do this, I first consolidated **Ad Platform data, Sales data, and GA4 Sessions** into a single weekly dataset. From there I used Google’s open-source MMM framework **Meridian** to estimate a national weekly model using `net_sales` as the main KPI.
 
-The idea was not just to generate channel ROIs, but to create a structured view of how media interacts with underlying demand and organic behavior over time.
+The objective was not just to generate channel ROIs, but to create a structured view of how **media interacts with underlying demand and organic behavior over time**.
 
+---
 
-2. Modeling approach (high-level overview)
+# 2. Modeling Approach (High-Level Overview)
 
 At a high level, I built a weekly dataset combining:
-	•	Paid media spend and impressions by platform
-	•	GA4 sessions by channel
-	•	Ecommerce net sales
 
-Paid media channels (Google Ads, Facebook Ads, Bing Ads, TikTok, The Trade Desk, and Pinterest Ads) enter the model as media variables with associated spend, while GA4 sessions act as control variables to capture baseline demand and organic traffic patterns.
+- Paid media **spend and impressions by platform**
+- **GA4 sessions by channel**
+- **Ecommerce net sales**
 
-The model was implemented using Meridian in a GPU-enabled Colab runtime, and it passed Meridian’s built-in diagnostic checks:
-	•	Overall model quality: PASS
-	•	R² close to 0.99
-	•	Low MAPE
-	•	Clean baseline diagnostics
+Paid media channels included in the model:
 
-In other words, from a technical perspective the model behaves as expected and provides a reasonable starting point to discuss channel contribution and budget decisions.
+- Google Ads  
+- Facebook Ads  
+- Bing Ads  
+- TikTok  
+- The Trade Desk  
+- Pinterest Ads  
 
+These enter the model as **media variables with associated spend**, while **GA4 sessions act as control variables** capturing baseline demand and organic traffic patterns.
 
-3. Key findings
+The model was implemented using **Meridian in a GPU-enabled Colab runtime** and passed Meridian’s built-in diagnostic checks:
 
-Media drives a meaningful but not dominant share of sales
+- **Overall model quality:** PASS  
+- **R²:** ~0.99  
+- **MAPE:** Low  
+- **Baseline diagnostics:** Clean  
 
-The model attributes roughly $30.9M of incremental revenue to paid media, which represents about 41% of total modeled revenue.
+From a technical perspective the model behaves as expected and provides a solid starting point to discuss **channel contribution and budget decisions**.
 
-The remaining ~59% comes from baseline demand and control variables such as GA4 traffic, trend, and seasonality.
+---
 
-That distribution feels directionally reasonable. Media is clearly important, but it is not the sole driver of sales. Organic demand and broader market behavior are doing a meaningful part of the work.
+# 3. Key Findings
 
+## Media Drives a Meaningful but Not Dominant Share of Sales
 
-Spend is highly concentrated in two main channels
+The model attributes approximately **$30.9M of incremental revenue to paid media**, representing about **41% of total modeled revenue**.
 
-Looking at the spend mix across the period:
-	•	Facebook Ads: ~60% of total paid spend and ~80% of impressions
-	•	Google Ads: ~34% of spend and ~15% of impressions
+The remaining **~59% comes from baseline demand and control variables** such as:
 
-The remaining platforms (Bing, TikTok, The Trade Desk, Pinterest) together represent only ~6–7% of total spend and less than 5% of impressions.
+- GA4 traffic
+- Trend
+- Seasonality
 
-So from a budget perspective the setup is essentially a Google + Facebook ecosystem with a small experimental long tail.
+This distribution feels directionally reasonable. Media is clearly important, but **it is not the sole driver of sales**. Organic demand and broader market behavior play a meaningful role as well.
 
+---
 
-Contribution follows a similar pattern, but not perfectly
+## Spend is Highly Concentrated in Two Main Channels
 
-The MMM suggests that both Google and Facebook are strong contributors, but their efficiency profiles are slightly different.
+Across the entire period:
 
-Google Ads
-	•	~34% of spend
-	•	~16.9% of modeled contribution
-	•	Estimated ROI: ~3.6x (credible interval: 0.6–7.6)
+- **Facebook Ads**
+  - ~60% of total paid spend
+  - ~80% of impressions
 
-Facebook Ads
-	•	~60% of spend
-	•	~22.9% of contribution
-	•	Estimated ROI: ~2.8x (credible interval: 0.5–6.9)
+- **Google Ads**
+  - ~34% of spend
+  - ~15% of impressions
 
-Both channels are clearly pulling their weight. Google appears somewhat more efficient, while Facebook carries more of the overall scale because of the larger budget behind it.
+The remaining platforms (Bing, TikTok, The Trade Desk, Pinterest) represent only:
 
-This is a fairly common pattern in ecommerce: search captures strong intent efficiently, while social platforms help sustain reach and scale.
+- **~6–7% of total spend**
+- **<5% of impressions**
 
+From a budget perspective, the setup is essentially **a Google + Facebook ecosystem with a small experimental long tail**.
 
-Smaller channels show positive but noisy signals
+---
 
-For the smaller platforms, the model detects positive signals but with wide uncertainty, which is expected given the relatively small budgets.
+## Contribution Follows a Similar Pattern (But Not Perfectly)
 
-Approximate results:
-	•	Bing Ads:
-~1.2% of spend | ~0.3% of contribution | ROI ~1.7x (0.3–4.5)
-	•	TikTok:
-~1.9% of spend | ~0.3% of contribution | ROI ~1.3x (0.2–3.7)
-	•	The Trade Desk:
-~2.0% of spend | ~0.3% of contribution | ROI ~1.2x (0.2–3.0)
-	•	Pinterest Ads:
-~0.5% of spend | ~0.1% of contribution | ROI ~1.4x (0.2–4.1)
+The MMM suggests both Google and Facebook are strong contributors, though their efficiency profiles differ slightly.
 
-Given the small scale and the wide credible intervals, I would interpret these less as precise ROI estimates and more as early directional signals.
+### Google Ads
 
-None of these channels appear clearly broken, but there is also not enough signal yet to make aggressive budget shifts based purely on the MMM output.
+- ~34% of spend
+- ~16.9% of modeled contribution
+- Estimated ROI: **~3.6x**  
+- Credible interval: **0.6 – 7.6**
 
+### Facebook Ads
 
-GA4 controls help separate demand from media impact
+- ~60% of spend
+- ~22.9% of contribution
+- Estimated ROI: **~2.8x**
+- Credible interval: **0.5 – 6.9**
 
-Including GA4 sessions as controls helps the model avoid over-crediting media for demand swings that are actually driven by underlying consumer behavior.
+Both channels are clearly pulling their weight.
 
-For example, increases in Paid Search and Direct sessions often line up with sales changes even when media spend is relatively flat. That is exactly what we would expect if demand and brand interest are driving part of the variation.
+- **Google appears somewhat more efficient**
+- **Facebook carries more of the scale** due to its larger budget
+
+This pattern is common in ecommerce:  
+Search captures **high intent efficiently**, while social platforms help **sustain reach and scale**.
+
+---
+
+## Smaller Channels Show Positive but Noisy Signals
+
+For smaller platforms the model detects **positive signals but with wide uncertainty**, which is expected given their smaller budgets.
+
+| Channel | Spend Share | Contribution | Estimated ROI |
+|-------|-------|-------|-------|
+| Bing Ads | ~1.2% | ~0.3% | ~1.7x (0.3–4.5) |
+| TikTok | ~1.9% | ~0.3% | ~1.3x (0.2–3.7) |
+| The Trade Desk | ~2.0% | ~0.3% | ~1.2x (0.2–3.0) |
+| Pinterest Ads | ~0.5% | ~0.1% | ~1.4x (0.2–4.1) |
+
+Given the small scale and wide credible intervals, these should be interpreted as **directional signals rather than precise ROI estimates**.
+
+None of these channels appear clearly broken, but there is **not enough signal yet to make aggressive budget shifts based purely on the MMM output**.
+
+---
+
+## GA4 Controls Help Separate Demand from Media Impact
+
+Including GA4 sessions as control variables helps the model avoid **over-crediting media for demand swings** driven by consumer behavior.
+
+For example, increases in **Paid Search and Direct sessions** often line up with sales changes even when media spend is flat. This is exactly what we would expect if **brand demand and intent** are doing part of the work.
 
 This is also reflected in:
-	•	a stable baseline component
-	•	clean posterior predictive checks
-	•	a strong Bayesian p-value
 
-Overall, the model appears to be capturing demand dynamics realistically rather than forcing everything through media coefficients.
+- A **stable baseline component**
+- Clean **posterior predictive checks**
+- A strong **Bayesian p-value**
 
+Overall the model appears to capture **demand dynamics realistically**, rather than forcing all variation into media coefficients.
 
-4. Recommended actions
+---
 
-Protect and optimize the main workhorse channels
+# 4. Recommended Actions
 
-Since Google Ads and Facebook Ads account for the vast majority of both spend and modeled contribution, I would avoid making large budget cuts to either channel based solely on this model.
+## Protect and Optimize the Main Workhorse Channels
 
-Instead, the better move is optimization within the channels:
-	•	Identify underperforming segments inside each platform
-(e.g., weaker audiences, placements, or ad groups)
-	•	Reallocate budget from those segments into the strongest performers before reducing total channel investment.
+Since **Google Ads and Facebook Ads account for the majority of both spend and modeled contribution**, large cuts to these channels would not be advisable based on this model alone.
 
-This approach typically produces faster gains than shifting large amounts of spend across platforms.
+Instead the focus should be **within-channel optimization**:
 
+- Identify underperforming segments inside each platform  
+  (e.g. weaker audiences, placements, or ad groups)
 
-Treat smaller platforms as structured test-and-learn channels
+- Reallocate budget from weaker segments into stronger performers before reducing total channel investment
 
-For Bing, TikTok, The Trade Desk, and Pinterest, the right strategy at this stage is structured experimentation rather than aggressive scaling or elimination.
+This typically produces faster gains than large cross-channel shifts.
+
+---
+
+## Treat Smaller Platforms as Structured Test-and-Learn Channels
+
+For **Bing, TikTok, The Trade Desk, and Pinterest**, the right approach is **structured experimentation** rather than aggressive scaling or elimination.
 
 Recommended approach:
-	•	Maintain small but intentional test budgets
-	•	Focus each test on specific hypotheses
-(creative format, audience, funnel stage, etc.)
 
-For the most promising channels (TikTok and The Trade Desk in particular), I would also recommend incrementality tests such as geo experiments or step tests.
+- Maintain **small but intentional test budgets**
+- Focus each test on **clear hypotheses**  
+  (creative format, audience, funnel stage)
 
-Those results can later be used to calibrate the MMM, which significantly improves model reliability.
+For the most promising platforms (**TikTok and The Trade Desk**), I would also recommend **incrementality tests**, such as:
 
+- Geo experiments
+- Step tests
 
-Use the MMM as a planning guardrail
+These results can later be used to **calibrate the MMM**, which significantly improves model reliability.
 
-Rather than treating the MMM as a final answer, it is most useful as a decision support tool.
+---
 
-For example, we can run scenario simulations such as:
-	•	shifting 10% of spend from a lower ROI channel into a higher ROI channel
-	•	holding total budget constant and estimating the predicted change in sales
+## Use the MMM as a Planning Guardrail
 
-The goal is not to blindly follow the model, but to avoid clearly suboptimal budget allocations.
+Rather than treating the MMM as a final answer, it is most useful as a **decision support tool**.
 
+For example, we can simulate scenarios such as:
 
-Improve the model with richer business context
+- Shifting **10% of budget from a lower-ROI channel to a higher-ROI channel**
+- Holding total spend constant and estimating the predicted change in sales
 
-For the next iteration of the MMM, I would add several business variables that typically improve model stability:
-	•	Promotion flags
-	•	Price changes
-	•	Major product launches
-	•	Competitive pressure proxies
+The goal is not to blindly follow the model, but to **avoid clearly suboptimal budget allocations**.
 
-Including these factors helps separate media-driven effects from commercial events, which usually makes the model both more accurate and easier to explain to stakeholders.
+---
 
+## Improve the Model with Richer Business Context
 
-Final takeaway
+For the next iteration of the MMM, I would incorporate additional business variables such as:
 
-Overall, the results suggest a fairly healthy media ecosystem.
+- Promotion flags
+- Price changes
+- Major product launches
+- Competitive pressure proxies
 
-Google and Facebook remain the primary drivers of media contribution, while smaller channels show early signals but require further testing before scaling decisions can be made.
+These inputs help separate **media-driven effects from commercial events**, improving both model accuracy and interpretability.
 
-The MMM provides a useful framework to understand how media interacts with demand, but its real value comes when it is combined with experimentation and ongoing iteration.
+---
 
-Used that way, it becomes a strong foundation for improving media efficiency while supporting both short-term revenue goals and long-term growth.
+# Final Takeaway
 
+Overall, the results suggest a **healthy media ecosystem**.
+
+- **Google and Facebook** remain the primary drivers of media contribution.
+- **Smaller channels show early positive signals**, but require additional testing before making major scaling decisions.
+
+The MMM provides a useful framework to understand how **media interacts with demand**, but its real value comes when combined with **experimentation and ongoing iteration**.
+
+Used this way, it becomes a strong foundation for improving media efficiency while supporting both **short-term revenue goals and long-term growth**.
